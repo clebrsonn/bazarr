@@ -3,6 +3,7 @@ import copy
 import json
 
 import pytest
+from requests.exceptions import Timeout
 from subliminal.exceptions import ProviderError
 from subliminal_patch.core import Episode, Movie, SZProviderPool
 from subliminal_patch.providers.animetosho_xyz import AnimeToshoXYZProvider, AnimeToshoXYZSubtitle
@@ -398,11 +399,14 @@ def test_cycle2_rss_canonical_positive_ids_are_valid(requests_mock, link):
         assert entries[0]['id'] == (99999999999999999999 if link.endswith('99999999999999999999') else 123)
 
 
+@pytest.mark.parametrize('lookup', ['tvdb', 'anidb'])
 @pytest.mark.parametrize('season', [0, 1, 2])
-def test_specials_native_core_explicit_season_download_gate(requests_mock, monkeypatch, season):
+def test_specials_native_core_explicit_season_download_gate(requests_mock, monkeypatch, season, lookup):
     """Exercise real listing, matching, scoring and pool gate; replace only download I/O."""
     name = f'Some.Show.S{season:02d}E01.mkv'
     video = Episode(name, 'Some Show', season, 1, series_tvdb_id=456)
+    if lookup == 'anidb':
+        video.series_anidb_episode_id = 12345
     requests_mock.get(BASE + '/api', text=rss((123, name)))
     requests_mock.get(BASE + '/json', json=payload(name=name))
     with AnimeToshoXYZProvider() as provider:
@@ -418,19 +422,23 @@ def test_specials_native_core_explicit_season_download_gate(requests_mock, monke
 
     monkeypatch.setattr(pool, 'download_subtitle', boundary_download)
     downloaded = pool.download_best_subtitles(subs, video, {Language('eng')}, min_score=0)
-    print({'season': season, 'matches': sorted(matches), 'attempts': len(attempted),
+    print({'season': season, 'lookup': lookup, 'matches': sorted(matches), 'attempts': len(attempted),
            'downloaded': len(downloaded)})
     assert {'series', 'season', 'episode'} <= matches
     assert downloaded == attempted == subs
+    assert ('eid' in requests_mock.request_history[0].qs) is (lookup == 'anidb')
     assert requests_mock.call_count == 2
 
 
+@pytest.mark.parametrize('lookup', ['tvdb', 'anidb'])
 @pytest.mark.parametrize('name', [
     'Some.Show.S01E01.mkv', 'Some.Show.S02E01.mkv', 'Some.Show.-.01.mkv',
     'Some.Show.S00E02.mkv', 'Some.Show.S00E01E02.mkv', 'Other.Show.S00E01.mkv',
 ])
-def test_specials_unverified_release_cannot_gain_season_or_download(requests_mock, monkeypatch, name):
+def test_specials_unverified_release_cannot_gain_season_or_download(requests_mock, monkeypatch, name, lookup):
     video = Episode('Some.Show.S00E01.mkv', 'Some Show', 0, 1, series_tvdb_id=456)
+    if lookup == 'anidb':
+        video.series_anidb_episode_id = 12345
     requests_mock.get(BASE + '/api', text=rss((123, name)))
     requests_mock.get(BASE + '/json', json=payload(name=name))
     with AnimeToshoXYZProvider() as provider:
@@ -461,3 +469,83 @@ def test_specials_season_match_requires_native_integer_episode_fields(field, bad
     setattr(video, field, bad)
     subtitle = AnimeToshoXYZSubtitle(Language('eng'), URL, {'file_name': name}, name, 123)
     assert 'season' not in subtitle.get_matches(video)
+
+
+@pytest.mark.parametrize('failure', [503, 'timeout'])
+def test_policy_anidb_detail_transport_failure_reaches_native(requests_mock, failure):
+    """Repository regression for the independent review's AniDB detail failures."""
+    name = 'Some.Show.S00E01.mkv'
+    video = Episode(name, 'Some Show', 0, 1, series_tvdb_id=456,
+                    series_anidb_episode_id=12345)
+    requests_mock.get(BASE + '/api?t=search&eid=12345', text=rss((1, name)))
+    options = {'status_code': failure} if isinstance(failure, int) else {'exc': Timeout('fixture')}
+    requests_mock.get(BASE + '/json?show=torrent&id=1', **options)
+    requests_mock.get(BASE + '/api?t=tvsearch&tvdbid=456&season=0&ep=1', text=rss((2, name)))
+    requests_mock.get(BASE + '/json?show=torrent&id=2', json=payload(id=2, name=name))
+    with AnimeToshoXYZProvider() as provider:
+        found = provider.list_subtitles(video, {Language('eng')})
+        assert ('torrent', 1) not in provider._cache
+    assert [s.release_id for s in found] == [2]
+    assert {'series', 'season', 'episode'} <= found[0].get_matches(video)
+    assert [r.qs for r in requests_mock.request_history] == [
+        {'t': ['search'], 'eid': ['12345']}, {'show': ['torrent'], 'id': ['1']},
+        {'t': ['tvsearch'], 'tvdbid': ['456'], 'season': ['0'], 'ep': ['1']},
+        {'show': ['torrent'], 'id': ['2']}]
+
+
+@pytest.mark.parametrize('failure', [503, 'timeout'])
+def test_policy_native_discovery_transport_failure_reaches_release(requests_mock, failure):
+    """Repository regression for the independent review's native discovery failures."""
+    name = 'Some.Show.S00E01.mkv'
+    video = Episode(name, 'Some Show', 0, 1, series_tvdb_id=456,
+                    series_anidb_episode_id=12345)
+    requests_mock.get(BASE + '/api?t=search&eid=12345', text=rss())
+    options = {'status_code': failure} if isinstance(failure, int) else {'exc': Timeout('fixture')}
+    params = {'t': 'tvsearch', 'tvdbid': 456, 'season': 0, 'ep': 1}
+    requests_mock.get(BASE + '/api?t=tvsearch&tvdbid=456&season=0&ep=1', **options)
+    requests_mock.get(BASE + '/api?t=search&q=Some.Show.S00E01', text=rss((2, name)))
+    requests_mock.get(BASE + '/json?show=torrent&id=2', json=payload(id=2, name=name))
+    with AnimeToshoXYZProvider() as provider:
+        found = provider.list_subtitles(video, {Language('eng')})
+        assert ('search', tuple(sorted(params.items()))) not in provider._cache
+    assert [s.release_id for s in found] == [2]
+    assert [r.qs for r in requests_mock.request_history] == [
+        {'t': ['search'], 'eid': ['12345']},
+        {'t': ['tvsearch'], 'tvdbid': ['456'], 'season': ['0'], 'ep': ['1']},
+        {'t': ['search'], 'q': ['some.show.s00e01']}, {'show': ['torrent'], 'id': ['2']}]
+
+
+@pytest.mark.parametrize('kind', ['tvdb', 'episode-tmdb', 'movie-tmdb'])
+@pytest.mark.parametrize('stage', ['discovery', 'detail'])
+@pytest.mark.parametrize('failure', [503, 'timeout'])
+def test_policy_native_transport_fallback_uniform_and_no_retry(requests_mock, kind, stage, failure):
+    """The same bounded stage boundary covers native episode and movie lookup."""
+    if kind == 'movie-tmdb':
+        name = 'Some.Movie.2020.mkv'
+        video = Movie(name, 'Some Movie', year=2020)
+        video.tmdb_id = 456
+        params = {'t': 'movie', 'tmdbid': 456}
+        native_url = BASE + '/api?t=movie&tmdbid=456'
+    else:
+        name = NAME
+        video = Episode(name, 'Some Show', 2, 3)
+        key = 'tvdbid' if kind == 'tvdb' else 'tmdbid'
+        setattr(video, 'series_tvdb_id' if kind == 'tvdb' else 'series_tmdb_id', 456)
+        params = {'t': 'tvsearch', key: 456, 'season': 2, 'ep': 3}
+        native_url = BASE + f'/api?t=tvsearch&{key}=456&season=2&ep=3'
+    options = {'status_code': failure} if isinstance(failure, int) else {'exc': Timeout('fixture')}
+    requests_mock.get(native_url, **(options if stage == 'discovery' else {'text': rss((1, name))}))
+    requests_mock.get(BASE + '/json?show=torrent&id=1', **options)
+    # Repeated release ID must not retry a failed detail within this listing.
+    requests_mock.get(BASE + '/api?t=search&q=' + name.removesuffix('.mkv'),
+                      text=rss((1, name), (2, name)) if stage == 'detail' else rss((2, name)))
+    requests_mock.get(BASE + '/json?show=torrent&id=2', json=payload(id=2, name=name))
+    with AnimeToshoXYZProvider() as provider:
+        assert [s.release_id for s in provider.list_subtitles(video, {Language('eng')})] == [2]
+        assert ('torrent', 1) not in provider._cache
+        if stage == 'discovery':
+            assert ('search', tuple(sorted(params.items()))) not in provider._cache
+    history = requests_mock.request_history
+    assert len(history) == (3 if stage == 'discovery' else 4)
+    assert sum('id' in r.qs and r.qs['id'] == ['1'] for r in history) == (stage == 'detail')
+    assert sum('/api?' in r.url for r in history) == 2

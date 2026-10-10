@@ -212,8 +212,8 @@ def test_list_subtitles_no_results(requests_mock):
         assert len(subtitles) == 0
 
 
-def test_list_subtitles_ignores_legacy_anidb_episode_id_tuple(anime_episodes, requests_mock, data):
-    # Legacy AniDB metadata is ignored; the episode uses native TVDB discovery.
+def test_list_subtitles_uses_valid_native_anidb_resolver_pair(anime_episodes, requests_mock, data):
+    # Native AniDB metadata is (series_id, episode_id); query the verified episode.
     language = Language("eng")
     item = anime_episodes["crowned_s01e08"]
     item.series_anidb_episode_id = (20151, 313249)
@@ -239,6 +239,7 @@ def test_list_subtitles_ignores_legacy_anidb_episode_id_tuple(anime_episodes, re
     with AnimeToshoXYZProvider() as provider:
         subtitles = provider.list_subtitles(item, languages={language})
         assert len(subtitles) == 2
+    assert requests_mock.request_history[0].qs == {'t': ['search'], 'eid': ['313249']}
 
 
 @pytest.mark.parametrize(

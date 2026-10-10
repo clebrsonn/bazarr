@@ -32,6 +32,135 @@ def detail(requests_mock, id=123, title=TITLE, **extra):
     return payload
 
 
+def test_available_anidb_episode_id_is_searched_before_tvdb(requests_mock):
+    item = episode(series_tvdb_id=456, series_anidb_episode_id=12345)
+    requests_mock.get(f'{BASE}/api', text=rss())
+    requests_mock.get(f'{BASE}/api?t=search&eid=12345', text=rss((123, TITLE)))
+    requests_mock.get(f'{BASE}/api?t=tvsearch&tvdbid=456&season=2&ep=3', text=rss())
+    detail(requests_mock)
+    with AnimeToshoXYZProvider() as provider:
+        assert len(provider.list_subtitles(item, {Language('eng')})) == 1
+    assert requests_mock.call_count == 2
+    assert requests_mock.request_history[0].qs == {'t': ['search'], 'eid': ['12345']}
+
+
+@pytest.mark.parametrize('resolver_value', [(100, 12345), (100, '12345')])
+def test_cached_native_anidb_resolver_pair_searches_episode_id(requests_mock, resolver_value):
+    item = episode(series_tvdb_id=456, series_anidb_id=100,
+                   series_anidb_episode_id=resolver_value)
+    requests_mock.get(f'{BASE}/api', text=rss((123, TITLE)))
+    detail(requests_mock)
+    with AnimeToshoXYZProvider() as provider:
+        assert len(provider.list_subtitles(item, {Language('eng')})) == 1
+    assert requests_mock.request_history[0].qs == {'t': ['search'], 'eid': ['12345']}
+
+
+@pytest.mark.parametrize('failure', [404, 429, 500, 'timeout'])
+def test_anidb_discovery_http_failure_falls_back_to_tvdb(requests_mock, failure):
+    from requests.exceptions import Timeout
+    item = episode(series_tvdb_id=456, series_anidb_episode_id=12345)
+    options = {'exc': Timeout('offline')} if failure == 'timeout' else {'status_code': failure}
+    requests_mock.get(f'{BASE}/api?t=search&eid=12345', **options)
+    requests_mock.get(f'{BASE}/api?t=tvsearch&tvdbid=456&season=2&ep=3', text=rss((123, TITLE)))
+    detail(requests_mock)
+    with AnimeToshoXYZProvider() as provider:
+        assert len(provider.list_subtitles(item, {Language('eng')})) == 1
+    assert requests_mock.call_count == 3
+    assert 'eid' in requests_mock.request_history[0].qs
+    assert 'tvdbid' in requests_mock.request_history[1].qs
+
+
+def test_anidb_discovery_does_not_mask_programmer_errors(requests_mock, monkeypatch):
+    item = episode(series_tvdb_id=456, series_anidb_episode_id=12345)
+    with AnimeToshoXYZProvider() as provider:
+        def broken_request(*args, **kwargs):
+            raise TypeError('programmer bug')
+        monkeypatch.setattr(provider.session, 'request', broken_request)
+        with pytest.raises(TypeError, match='programmer bug'):
+            provider.list_subtitles(item, {Language('eng')})
+    assert requests_mock.call_count == 0
+
+
+def test_anidb_native_release_discovery_is_bounded_to_three_requests(requests_mock):
+    item = episode(series_tvdb_id=456, series_anidb_episode_id=12345)
+    requests_mock.get(f'{BASE}/api', text=rss())
+    with AnimeToshoXYZProvider() as provider:
+        assert provider.list_subtitles(item, {Language('eng')}) == []
+    assert [request.qs for request in requests_mock.request_history] == [
+        {'t': ['search'], 'eid': ['12345']},
+        {'t': ['tvsearch'], 'tvdbid': ['456'], 'season': ['2'], 'ep': ['3']},
+        {'t': ['search'], 'q': ['some.show.s02e03.1080p.web-dl']},
+    ]
+
+
+@pytest.mark.parametrize('native', ['tvdb', 'tmdb'])
+@pytest.mark.parametrize('anidb_result', ['empty', 'no-tracks', 'wrong-language'])
+def test_unusable_anidb_results_fall_back_to_native_id(requests_mock, native, anidb_result):
+    item = episode(series_anidb_episode_id=12345)
+    setattr(item, 'series_' + native + '_id', 456)
+    requests_mock.get(f'{BASE}/api?t=search&eid=12345',
+                      text=rss() if anidb_result == 'empty' else rss((124, TITLE)))
+    detail(requests_mock, id=124, attachments=[] if anidb_result == 'no-tracks' else [
+        {'id': 2, 'type': 'subtitle', 'url': URL, 'info': {'language_code': 'jpn'}}])
+    requests_mock.get(f'{BASE}/api?t=tvsearch&{native}id=456&season=2&ep=3', text=rss((123, TITLE)))
+    detail(requests_mock)
+    with AnimeToshoXYZProvider() as provider:
+        assert [s.release_id for s in provider.list_subtitles(item, {Language('eng')})] == [123]
+    discoveries = [r.qs for r in requests_mock.request_history if '/api?' in r.url]
+    assert discoveries == [{'t': ['search'], 'eid': ['12345']},
+                           {'t': ['tvsearch'], native + 'id': ['456'], 'season': ['2'], 'ep': ['3']}]
+
+
+@pytest.mark.parametrize('bad', [None, '', 'bad', True, False, 0, -1, 123.0, [], {},
+                                  '1' * 5000, ' 123', '123 ', '0123', '+123',
+                                  (999, 12345), (100, True), (True, 12345), (100, ' 123'),
+                                  (' 100', 12345), (100, 'bad'), (100,), (100, 12345, 3), [100, 12345]])
+def test_invalid_anidb_ids_are_not_repaired_or_queried(requests_mock, bad):
+    item = episode(series_tvdb_id=456, series_anidb_id=100, series_anidb_episode_id=bad)
+    requests_mock.get(f'{BASE}/api', text=rss((123, TITLE)))
+    detail(requests_mock)
+    with AnimeToshoXYZProvider() as provider:
+        assert len(provider.list_subtitles(item, {Language('eng')})) == 1
+    assert 'tvdbid' in requests_mock.request_history[0].qs
+    assert not any('eid' in r.qs for r in requests_mock.request_history)
+
+
+def test_full_unusable_anidb_feed_reserves_native_and_release_detail_budget(requests_mock):
+    item = episode(series_tvdb_id=456, series_anidb_episode_id=12345)
+    requests_mock.get(f'{BASE}/api?t=search&eid=12345', text=rss(*[(i, TITLE) for i in range(1, 21)]))
+    for i in range(1, 21):
+        detail(requests_mock, id=i, attachments=[
+            {'id': 2, 'type': 'subtitle', 'url': URL, 'info': {'language_code': 'jpn'}}])
+    requests_mock.get(f'{BASE}/api?t=tvsearch&tvdbid=456&season=2&ep=3', text=rss((124, TITLE)))
+    detail(requests_mock, id=124, attachments=[])
+    requests_mock.get(f'{BASE}/api?t=search&q=Some.Show.S02E03.1080p.WEB-DL', text=rss((123, TITLE)))
+    detail(requests_mock)
+    with AnimeToshoXYZProvider() as provider:
+        for _ in range(2):
+            assert [s.release_id for s in provider.list_subtitles(item, {Language('eng')})] == [123]
+    assert len([r for r in requests_mock.request_history if '/json?' in r.url]) == 20
+    assert len([r for r in requests_mock.request_history if '/api?' in r.url]) == 3
+
+
+@pytest.mark.parametrize('body', ['<rss>', '<html/>', '<!DOCTYPE rss><rss><channel/></rss>'])
+def test_unsafe_anidb_discovery_is_not_treated_as_empty_search(requests_mock, body):
+    from subliminal.exceptions import ProviderError
+    requests_mock.get(f'{BASE}/api?t=search&eid=12345', text=body)
+    with AnimeToshoXYZProvider() as provider, pytest.raises(ProviderError):
+        provider.list_subtitles(episode(series_tvdb_id=456, series_anidb_episode_id=12345), {Language('eng')})
+    assert requests_mock.call_count == 1
+
+
+@pytest.mark.parametrize('extra', [{'tvdbid': '999'}, {'year': 1990}])
+def test_anidb_query_does_not_override_verified_identity_contradictions(requests_mock, extra):
+    item = episode(series_tvdb_id=456, series_anidb_episode_id=12345, year=2020)
+    requests_mock.get(f'{BASE}/api', text=rss((123, TITLE)))
+    detail(requests_mock, **extra)
+    with AnimeToshoXYZProvider() as provider:
+        assert provider.list_subtitles(item, {Language('eng')}) == []
+    assert len([r for r in requests_mock.request_history if '/json?' in r.url]) == 1
+
+
 def test_tvdb_episode_uses_net_torznab_rss_without_anidb(requests_mock):
     item = episode(series_tvdb_id=456)
     requests_mock.get(f'{BASE}/api?t=tvsearch&tvdbid=456&season=2&ep=3', text=rss((123, TITLE)))
@@ -87,11 +216,14 @@ def test_movie_native_identifiers_and_movie_matches(requests_mock, metadata, que
     assert not {'series', 'season', 'episode'} & subtitles[0].get_matches(item)
 
 
+@pytest.mark.parametrize('lookup', ['tvdb', 'anidb'])
 @pytest.mark.parametrize('wrong', ['Some.Show.S01E03.mkv', 'Some.Show.S02E04.mkv',
                                    'Other.Show.S02E03.mkv', 'Some.Show.S02E03E04.mkv',
                                    'Some Show - 03.mkv'])
-def test_refuses_wrong_or_ambiguous_episode_even_from_id_feed(requests_mock, wrong):
+def test_refuses_wrong_or_ambiguous_episode_even_from_id_feed(requests_mock, wrong, lookup):
     item = episode(series_tvdb_id=456)
+    if lookup == 'anidb':
+        item.series_anidb_episode_id = 12345
     requests_mock.get(f'{BASE}/api', text=rss((123, wrong)))
     detail(requests_mock, title=wrong)
     with AnimeToshoXYZProvider() as provider:
@@ -237,12 +369,16 @@ def test_corrupt_xz_download_is_a_provider_error(requests_mock):
 
 
 @pytest.mark.parametrize('status', [404, 429, 500])
-def test_http_failure_stops_without_retry_or_text_fallback(requests_mock, status):
+def test_http_failure_exhausts_bounded_fallback_without_retry(requests_mock, status):
     from subliminal.exceptions import ProviderError
     requests_mock.get(f'{BASE}/api', status_code=status)
-    with AnimeToshoXYZProvider() as provider, pytest.raises(ProviderError):
-        provider.list_subtitles(episode(series_tvdb_id=456), {Language('eng')})
-    assert requests_mock.call_count == 1
+    with AnimeToshoXYZProvider() as provider:
+        with pytest.raises(ProviderError):
+            provider.list_subtitles(episode(series_tvdb_id=456), {Language('eng')})
+        assert not provider._cache
+    # Native ID, release and title each fail once; the final failure still propagates.
+    assert requests_mock.call_count == 3
+    assert len({r.url for r in requests_mock.request_history}) == 3
 
 
 def test_http_timeout_is_a_native_provider_error(requests_mock):

@@ -11,6 +11,7 @@ from xml.etree import ElementTree
 from babelfish.exceptions import LanguageReverseError
 from guessit import guessit
 from requests import Session, Response
+from requests.exceptions import RequestException
 from subzero.language import Language
 
 from subliminal.exceptions import ProviderError
@@ -45,6 +46,10 @@ _BRAZILIAN_PORTUGUESE_RE = re.compile(r'brazil|\bbr\b', re.IGNORECASE)
 _VIDEO_EXTENSIONS = {'.mkv', '.mp4', '.avi', '.m4v', '.mov', '.ts', '.m2ts', '.mpg', '.mpeg', '.webm', '.wmv', '.ogm'}
 
 
+class _AnimeToshoHTTPError(ProviderError):
+    """Expected transport/status failure, distinct from unsafe metadata."""
+
+
 class _RSSBuilder(ElementTree.TreeBuilder):
     def doctype(self, name, pubid, system):
         # Parser callbacks reject DTDs regardless of byte encoding, before expansion.
@@ -73,6 +78,14 @@ def _normalized_id(value, imdb=False):
         return None
     number = int(text)
     return str(number) if number > 0 else None
+
+
+def _anidb_id(value):
+    """Reject malformed AniDB IDs rather than repairing padding or leading zeros."""
+    normalized = _normalized_id(value)
+    if isinstance(value, str) and value != normalized:
+        return None
+    return normalized
 
 
 def _release_id(value):
@@ -219,35 +232,46 @@ class AnimeToshoXYZProvider(Provider, ProviderSubtitleArchiveMixin):
         :type fn: Callable
         :return: The HTTP response object returned by the provided function if the status code is valid.
         :rtype: Response
-        :raises ProviderError: If an unhandled exception occurs or the endpoint is not found.
+        :raises ProviderError: If the HTTP transport fails or the response status is not successful.
         """
         response = None
         try:
             response = fn()
-        except Exception:
-            logger.exception('Unhandled exception raised.')
-            raise ProviderError('Unhandled exception raised. Check log.')
+        except RequestException as error:
+            logger.warning('AnimeTosho metadata transport failed (%s).', type(error).__name__)
+            raise _AnimeToshoHTTPError('AnimeTosho HTTP request failed') from error
         else:
             status_code = response.status_code
             if status_code == 404:
                 logger.error(f"Endpoint not found: {response.url}")
-                raise ProviderError("Endpoint not found")
+                raise _AnimeToshoHTTPError("Endpoint not found")
             elif status_code != 200:
                 logger.error(f"HTTP error {status_code} for {response.url}")
-                raise ProviderError(f"HTTP error {status_code}")
+                raise _AnimeToshoHTTPError(f"HTTP error {status_code}")
 
             return response
 
     def list_subtitles(self, video, languages):
         seen = set()
-        queries = list(self._search_queries(video))
+        # AniDB, native ID, then text; retain the existing title alternative when
+        # an earlier identifier stage is absent, without adding a fourth discovery.
+        queries = list(self._search_queries(video))[:3]
         for index, params in enumerate(queries):
-            entries = self._search_entries(params)
-            # Reserve one detail for each remaining fallback, unless this stage already
-            # supplies requested tracks. The global ceiling remains twenty unique details.
-            ceiling = self.result_limit - (len(queries) - index - 1)
-            subtitles = self._get_series(entries, video, seen, params=params,
-                                         languages=languages, ceiling=ceiling)
+            try:
+                entries = self._search_entries(params)
+                # Reserve one detail for each remaining fallback, unless this stage already
+                # supplies requested tracks. The global ceiling remains twenty unique details.
+                ceiling = self.result_limit - (len(queries) - index - 1)
+                subtitles = self._get_series(entries, video, seen, params=params,
+                                             languages=languages, ceiling=ceiling)
+            except _AnimeToshoHTTPError:
+                # Only expected transport/status failures may advance a stage. Unsafe
+                # metadata and identity errors still propagate, and attempted details
+                # remain in seen so neither the budget nor failed releases are retried.
+                if index == len(queries) - 1:
+                    raise
+                logger.warning('AnimeTosho metadata stage unavailable; trying next fallback.')
+                continue
             if subtitles:
                 return subtitles
             if len(seen) >= self.result_limit:
@@ -263,6 +287,15 @@ class AnimeToshoXYZProvider(Provider, ProviderSubtitleArchiveMixin):
                 yield {'t': 'movie', 'imdbid': video.imdb_id}
             title_query = f'{video.title} {video.year or ""}'.strip()
         else:
+            episode_id = getattr(video, 'series_anidb_episode_id', None)
+            # The native cached resolver returns (series_id, episode_id). Accept that
+            # shape only when its series agrees with the refined video's series ID.
+            if isinstance(episode_id, tuple) and len(episode_id) == 2:
+                series_id = _anidb_id(getattr(video, 'series_anidb_id', None))
+                episode_id = episode_id[1] if series_id and _anidb_id(episode_id[0]) == series_id else None
+            episode_id = _anidb_id(episode_id)
+            if episode_id:
+                yield {'t': 'search', 'eid': episode_id}
             if _normalized_id(getattr(video, 'series_tvdb_id', None)):
                 yield {'t': 'tvsearch', 'tvdbid': video.series_tvdb_id,
                        'season': video.season, 'ep': video.episode}
@@ -283,8 +316,10 @@ class AnimeToshoXYZProvider(Provider, ProviderSubtitleArchiveMixin):
         return self._cached(key, lambda: self._fetch_entries(params))
 
     def _fetch_entries(self, params):
-        response = self.checked(lambda: self.session.get(
-            'https://feed.animetosho.net/api', params=params, timeout=10, allow_redirects=False))
+        # Use request directly: native RetryingSession.get would pace repeated
+        # discovery attempts before this bounded fallback loop can advance.
+        response = self.checked(lambda: self.session.request(
+            'GET', 'https://feed.animetosho.net/api', params=params, timeout=10, allow_redirects=False))
         try:
             root = ElementTree.fromstring(response.content,
                                           parser=ElementTree.XMLParser(target=_RSSBuilder()))
@@ -401,8 +436,10 @@ class AnimeToshoXYZProvider(Provider, ProviderSubtitleArchiveMixin):
 
     def _fetch_torrent(self, release_id):
         release_id = _release_id(release_id)
-        response = self.checked(lambda: self.session.get(
-            'https://feed.animetosho.net/json', params={'show': 'torrent', 'id': release_id},
+        # Bypass native RetryingSession.get here too: each failed detail must consume
+        # only one attempt before the bounded stage fallback advances.
+        response = self.checked(lambda: self.session.request(
+            'GET', 'https://feed.animetosho.net/json', params={'show': 'torrent', 'id': release_id},
             timeout=10, allow_redirects=False))
         try:
             data = response.json()
