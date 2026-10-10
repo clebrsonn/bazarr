@@ -20,8 +20,9 @@ except ImportError:
     except ImportError:
         import xml.etree.ElementTree as etree
 
-refined_providers = {'animetosho', 'animetosho_xyz', 'jimaku'}
-providers_requiring_anidb_api = {'animetosho', 'animetosho_xyz'}
+# animetosho_xyz uses AnimeTosho.net's native TVDB/TMDB/text lookup, not AniDB.
+refined_providers = {'animetosho', 'jimaku'}
+providers_requiring_anidb_api = {'animetosho'}
 
 logger = logging.getLogger(__name__)
 
