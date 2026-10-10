@@ -1,0 +1,298 @@
+{
+  "is_seadex": false,
+  "anidb_aid": 69,
+  "anidb_eid": 315481,
+  "anidb_fid": null,
+  "anidb_gid": 16740,
+  "anidex_id": null,
+  "article_title": "nBT",
+  "article_url": "https://nekobt.to/torrents/14320334789386",
+  "attachments": [
+    {
+      "id": 3670682,
+      "info": {
+        "default": true,
+        "forced": false,
+        "format": "SRT",
+        "language": "English",
+        "language_code": "eng"
+      },
+      "size": null,
+      "type": "subtitle",
+      "url": "https://storage.animetosho.net/attachments/10006/f597.xz?filename=One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG_track2.eng.srt.xz"
+    },
+    {
+      "id": 3670683,
+      "info": {
+        "default": false,
+        "forced": false,
+        "format": "SRT",
+        "language": "Arabic",
+        "language_code": "ara"
+      },
+      "size": null,
+      "type": "subtitle",
+      "url": "https://storage.animetosho.net/attachments/10006/f598.xz?filename=One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG_track3.ara.srt.xz"
+    },
+    {
+      "id": 3670684,
+      "info": {
+        "default": false,
+        "forced": false,
+        "format": "SRT",
+        "language": "German",
+        "language_code": "ger"
+      },
+      "size": null,
+      "type": "subtitle",
+      "url": "https://storage.animetosho.net/attachments/10006/f599.xz?filename=One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG_track4.ger.srt.xz"
+    },
+    {
+      "id": 3670685,
+      "info": {
+        "default": false,
+        "forced": false,
+        "format": "SRT",
+        "language": "Latin American",
+        "language_code": "spa"
+      },
+      "size": null,
+      "type": "subtitle",
+      "url": "https://storage.animetosho.net/attachments/10006/f59a.xz?filename=One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG_track5.spa.srt.xz"
+    },
+    {
+      "id": 3670686,
+      "info": {
+        "default": false,
+        "forced": false,
+        "format": "SRT",
+        "language": "European Spanish",
+        "language_code": "spa"
+      },
+      "size": null,
+      "type": "subtitle",
+      "url": "https://storage.animetosho.net/attachments/10006/f59b.xz?filename=One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG_track6.spa.srt.xz"
+    },
+    {
+      "id": 3670687,
+      "info": {
+        "default": false,
+        "forced": false,
+        "format": "SRT",
+        "language": "French",
+        "language_code": "fre"
+      },
+      "size": null,
+      "type": "subtitle",
+      "url": "https://storage.animetosho.net/attachments/10006/f59c.xz?filename=One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG_track7.fre.srt.xz"
+    },
+    {
+      "id": 3670688,
+      "info": {
+        "default": false,
+        "forced": false,
+        "format": "SRT",
+        "language": "ind",
+        "language_code": "ind"
+      },
+      "size": null,
+      "type": "subtitle",
+      "url": "https://storage.animetosho.net/attachments/10006/f59d.xz?filename=One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG_track8.ind.srt.xz"
+    },
+    {
+      "id": 3670689,
+      "info": {
+        "default": false,
+        "forced": false,
+        "format": "SRT",
+        "language": "Italian",
+        "language_code": "ita"
+      },
+      "size": null,
+      "type": "subtitle",
+      "url": "https://storage.animetosho.net/attachments/10006/f59e.xz?filename=One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG_track9.ita.srt.xz"
+    },
+    {
+      "id": 3670690,
+      "info": {
+        "default": false,
+        "forced": false,
+        "format": "SRT",
+        "language": "may",
+        "language_code": "may"
+      },
+      "size": null,
+      "type": "subtitle",
+      "url": "https://storage.animetosho.net/attachments/10006/f59f.xz?filename=One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG_track10.may.srt.xz"
+    },
+    {
+      "id": 3670691,
+      "info": {
+        "default": false,
+        "forced": false,
+        "format": "SRT",
+        "language": "pol",
+        "language_code": "pol"
+      },
+      "size": null,
+      "type": "subtitle",
+      "url": "https://storage.animetosho.net/attachments/10006/f5a0.xz?filename=One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG_track11.pol.srt.xz"
+    },
+    {
+      "id": 3670692,
+      "info": {
+        "default": false,
+        "forced": false,
+        "format": "SRT",
+        "language": "Portuguese[BR]",
+        "language_code": "por"
+      },
+      "size": null,
+      "type": "subtitle",
+      "url": "https://storage.animetosho.net/attachments/10006/f5a1.xz?filename=One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG_track12.por.srt.xz"
+    },
+    {
+      "id": 3670693,
+      "info": {
+        "default": false,
+        "forced": false,
+        "format": "SRT",
+        "language": "Portuguese",
+        "language_code": "por"
+      },
+      "size": null,
+      "type": "subtitle",
+      "url": "https://storage.animetosho.net/attachments/10006/f5a2.xz?filename=One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG_track13.por.srt.xz"
+    },
+    {
+      "id": 3670694,
+      "info": {
+        "default": false,
+        "forced": false,
+        "format": "SRT",
+        "language": "tha",
+        "language_code": "tha"
+      },
+      "size": null,
+      "type": "subtitle",
+      "url": "https://storage.animetosho.net/attachments/10006/f5a3.xz?filename=One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG_track14.tha.srt.xz"
+    },
+    {
+      "id": 3670695,
+      "info": {
+        "default": false,
+        "forced": false,
+        "format": "SRT",
+        "language": "tur",
+        "language_code": "tur"
+      },
+      "size": null,
+      "type": "subtitle",
+      "url": "https://storage.animetosho.net/attachments/10006/f5a4.xz?filename=One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG_track15.tur.srt.xz"
+    },
+    {
+      "id": 3670696,
+      "info": {
+        "default": false,
+        "forced": false,
+        "format": "SRT",
+        "language": "vie",
+        "language_code": "vie"
+      },
+      "size": null,
+      "type": "subtitle",
+      "url": "https://storage.animetosho.net/attachments/10006/f5a5.xz?filename=One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG_track16.vie.srt.xz"
+    }
+  ],
+  "comment": null,
+  "deleted": false,
+  "files": [
+    {
+      "bt2": null,
+      "crc32": "3CBDE631",
+      "ed2k": "F5CE4A70C05E3ABCB39418291657EC95",
+      "filename": "One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG.mkv",
+      "id": 1417314,
+      "info": {
+        "mediainfo": "General\nUnique ID                                : 141516301043799672059487662072336912094 (0x6A770C5584E0E1E90B4BC52BDF1E8EDE)\nComplete name                            : One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG.mkv\nFormat                                   : Matroska\nFormat version                           : Version 4\nFile size                                : 860 MiB\nDuration                                 : 23 min 37 s\nOverall bit rate mode                    : Variable\nOverall bit rate                         : 5 088 kb/s\nFrame rate                               : 23.976 FPS\nWriting application                      : mkvmerge v102.0 ('Little Houses') 64-bit\nWriting library                          : libebml v1.4.7 + libmatroska v1.7.2\n\nVideo\nID                                       : 1\nFormat                                   : AVC\nFormat/Info                              : Advanced Video Codec\nFormat profile                           : Main@L4\nFormat settings                          : CABAC / 3 Ref Frames\nFormat settings, CABAC                   : Yes\nFormat settings, Reference frames        : 3 frames\nCodec ID                                 : V_MPEG4/ISO/AVC\nDuration                                 : 23 min 37 s\nBit rate mode                            : Variable\nBit rate                                 : 5 000 kb/s\nMaximum bit rate                         : 7 500 kb/s\nWidth                                    : 1 920 pixels\nHeight                                   : 1 080 pixels\nDisplay aspect ratio                     : 16:9\nFrame rate mode                          : Constant\nFrame rate                               : 23.976 (24000/1001) FPS\nColor space                              : YUV\nChroma subsampling                       : 4:2:0\nBit depth                                : 8 bits\nScan type                                : Progressive\nBits/(Pixel*Frame)                       : 0.101\nStream size                              : 838 MiB (97%)\nWriting library                          : x264 core 148 r2746 95846cf\nEncoding settings                        : cabac=1 / ref=3 / deblock=1:0:0 / analyse=0x1:0x111 / me=umh / subme=10 / psy=1 / psy_rd=1.00:0.00 / mixed_ref=1 / me_range=24 / chroma_me=1 / trellis=2 / 8x8dct=0 / cqm=0 / deadzone=21,11 / fast_pskip=1 / chroma_qp_offset=-2 / threads=15 / lookahead_threads=1 / sliced_threads=0 / nr=0 / decimate=1 / interlaced=0 / bluray_compat=0 / stitchable=1 / constrained_intra=0 / bframes=2 / b_pyramid=0 / b_adapt=2 / b_bias=0 / direct=3 / weightb=1 / open_gop=0 / weightp=2 / keyint=240 / keyint_min=121 / scenecut=0 / intra_refresh=0 / rc_lookahead=48 / rc=2pass / mbtree=1 / bitrate=5000 / ratetol=1.0 / qcomp=0.50 / qpmin=6 / qpmax=51 / qpstep=4 / cplxblur=20.0 / qblur=0.5 / vbv_maxrate=7500 / vbv_bufsize=10000 / nal_hrd=vbr / filler=0 / ip_ratio=1.40 / aq=1:1.00\nDefault                                  : Yes\nForced                                   : No\n\nAudio\nID                                       : 2\nFormat                                   : AAC LC SBR\nFormat/Info                              : Advanced Audio Codec Low Complexity with Spectral Band Replication\nCommercial name                          : HE-AAC\nFormat settings                          : Explicit\nCodec ID                                 : A_AAC-2\nDuration                                 : 23 min 37 s\nBit rate                                 : 128 kb/s\nChannel(s)                               : 2 channels\nChannel layout                           : L R\nSampling rate                            : 48.0 kHz\nFrame rate                               : 23.438 FPS (2048 SPF)\nCompression mode                         : Lossy\nStream size                              : 21.6 MiB (3%)\nLanguage                                 : Japanese\nDefault                                  : Yes\nForced                                   : No\n\nText #1\nID                                       : 3\nFormat                                   : UTF-8\nCodec ID                                 : S_TEXT/UTF8\nCodec ID/Info                            : UTF-8 Plain Text\nDuration                                 : 22 min 52 s\nBit rate                                 : 39 b/s\nFrame rate                               : 0.181 FPS\nCount of elements                        : 248\nStream size                              : 6.64 KiB (0%)\nLanguage                                 : English\nDefault                                  : Yes\nForced                                   : No\n\nText #2\nID                                       : 4\nFormat                                   : UTF-8\nCodec ID                                 : S_TEXT/UTF8\nCodec ID/Info                            : UTF-8 Plain Text\nDuration                                 : 21 min 44 s\nBit rate                                 : 51 b/s\nFrame rate                               : 0.161 FPS\nCount of elements                        : 210\nStream size                              : 8.21 KiB (0%)\nLanguage                                 : Arabic\nDefault                                  : No\nForced                                   : No\n\nText #3\nID                                       : 5\nFormat                                   : UTF-8\nCodec ID                                 : S_TEXT/UTF8\nCodec ID/Info                            : UTF-8 Plain Text\nDuration                                 : 21 min 44 s\nBit rate                                 : 33 b/s\nFrame rate                               : 0.162 FPS\nCount of elements                        : 211\nStream size                              : 5.34 KiB (0%)\nLanguage                                 : German\nDefault                                  : No\nForced                                   : No\n\nText #4\nID                                       : 6\nFormat                                   : UTF-8\nCodec ID                                 : S_TEXT/UTF8\nCodec ID/Info                            : UTF-8 Plain Text\nDuration                                 : 21 min 44 s\nBit rate                                 : 34 b/s\nFrame rate                               : 0.162 FPS\nCount of elements                        : 211\nStream size                              : 5.55 KiB (0%)\nTitle                                    : Latin American\nLanguage                                 : Spanish (Latin America)\nDefault                                  : No\nForced                                   : No\n\nText #5\nID                                       : 7\nFormat                                   : UTF-8\nCodec ID                                 : S_TEXT/UTF8\nCodec ID/Info                            : UTF-8 Plain Text\nDuration                                 : 21 min 44 s\nBit rate                                 : 36 b/s\nFrame rate                               : 0.162 FPS\nCount of elements                        : 211\nStream size                              : 5.76 KiB (0%)\nTitle                                    : European\nLanguage                                 : Spanish (ES)\nDefault                                  : No\nForced                                   : No\n\nText #6\nID                                       : 8\nFormat                                   : UTF-8\nCodec ID                                 : S_TEXT/UTF8\nCodec ID/Info                            : UTF-8 Plain Text\nDuration                                 : 21 min 35 s\nBit rate                                 : 35 b/s\nFrame rate                               : 0.153 FPS\nCount of elements                        : 198\nStream size                              : 5.59 KiB (0%)\nLanguage                                 : French\nDefault                                  : No\nForced                                   : No\n\nText #7\nID                                       : 9\nFormat                                   : UTF-8\nCodec ID                                 : S_TEXT/UTF8\nCodec ID/Info                            : UTF-8 Plain Text\nDuration                                 : 21 min 44 s\nBit rate                                 : 33 b/s\nFrame rate                               : 0.162 FPS\nCount of elements                        : 211\nStream size                              : 5.40 KiB (0%)\nLanguage                                 : Indonesian\nDefault                                  : No\nForced                                   : No\n\nText #8\nID                                       : 10\nFormat                                   : UTF-8\nCodec ID                                 : S_TEXT/UTF8\nCodec ID/Info                            : UTF-8 Plain Text\nDuration                                 : 21 min 44 s\nBit rate                                 : 38 b/s\nFrame rate                               : 0.162 FPS\nCount of elements                        : 211\nStream size                              : 6.06 KiB (0%)\nLanguage                                 : Italian\nDefault                                  : No\nForced                                   : No\n\nText #9\nID                                       : 11\nFormat                                   : UTF-8\nCodec ID                                 : S_TEXT/UTF8\nCodec ID/Info                            : UTF-8 Plain Text\nDuration                                 : 21 min 44 s\nBit rate                                 : 32 b/s\nFrame rate                               : 0.161 FPS\nCount of elements                        : 210\nStream size                              : 5.10 KiB (0%)\nLanguage                                 : Malay\nDefault                                  : No\nForced                                   : No\n\nText #10\nID                                       : 12\nFormat                                   : UTF-8\nCodec ID                                 : S_TEXT/UTF8\nCodec ID/Info                            : UTF-8 Plain Text\nDuration                                 : 21 min 44 s\nBit rate                                 : 28 b/s\nFrame rate                               : 0.159 FPS\nCount of elements                        : 207\nStream size                              : 4.47 KiB (0%)\nLanguage                                 : Polish\nDefault                                  : No\nForced                                   : No\n\nText #11\nID                                       : 13\nFormat                                   : UTF-8\nCodec ID                                 : S_TEXT/UTF8\nCodec ID/Info                            : UTF-8 Plain Text\nDuration                                 : 21 min 44 s\nBit rate                                 : 33 b/s\nFrame rate                               : 0.161 FPS\nCount of elements                        : 210\nStream size                              : 5.29 KiB (0%)\nTitle                                    : Brazilian\nLanguage                                 : Portuguese (BR)\nDefault                                  : No\nForced                                   : No\n\nText #12\nID                                       : 14\nFormat                                   : UTF-8\nCodec ID                                 : S_TEXT/UTF8\nCodec ID/Info                            : UTF-8 Plain Text\nDuration                                 : 21 min 44 s\nBit rate                                 : 34 b/s\nFrame rate                               : 0.159 FPS\nCount of elements                        : 207\nStream size                              : 5.49 KiB (0%)\nTitle                                    : European\nLanguage                                 : Portuguese (PT)\nDefault                                  : No\nForced                                   : No\n\nText #13\nID                                       : 15\nFormat                                   : UTF-8\nCodec ID                                 : S_TEXT/UTF8\nCodec ID/Info                            : UTF-8 Plain Text\nDuration                                 : 21 min 44 s\nBit rate                                 : 85 b/s\nFrame rate                               : 0.162 FPS\nCount of elements                        : 211\nStream size                              : 13.6 KiB (0%)\nLanguage                                 : Thai\nDefault                                  : No\nForced                                   : No\n\nText #14\nID                                       : 16\nFormat                                   : UTF-8\nCodec ID                                 : S_TEXT/UTF8\nCodec ID/Info                            : UTF-8 Plain Text\nDuration                                 : 21 min 44 s\nBit rate                                 : 32 b/s\nFrame rate                               : 0.162 FPS\nCount of elements                        : 211\nStream size                              : 5.25 KiB (0%)\nLanguage                                 : Turkish\nDefault                                  : No\nForced                                   : No\n\nText #15\nID                                       : 17\nFormat                                   : UTF-8\nCodec ID                                 : S_TEXT/UTF8\nCodec ID/Info                            : UTF-8 Plain Text\nDuration                                 : 21 min 44 s\nBit rate                                 : 43 b/s\nFrame rate                               : 0.162 FPS\nCount of elements                        : 211\nStream size                              : 6.98 KiB (0%)\nLanguage                                 : Vietnamese\nDefault                                  : No\nForced                                   : No\n\nMenu\n00:00:00.000                             : en:Intro\n00:01:39.500                             : en:Scene 2\n00:23:29.450                             : en:Credits"
+      },
+      "is_archive": false,
+      "links": {
+        "akirabox": "https://akirabox.com/Pbe3Paqp9zlX/file",
+        "buzzheavier": "https://buzzheavier.com/dkkdum2ltc85",
+        "fileditch": "https://fileditchvids.st/alpha36/013257d83c252fe76190/One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG.mkv",
+        "gofile": "https://gofile.io/d/QUyUsMcu",
+        "zerofs": "https://zerofs.link/f/BbKUcWP/"
+      },
+      "links_audio": {
+        "buzzheavier": "https://buzzheavier.com/ginlvd3c7tuq",
+        "fileditch": "https://fileditchfiles.st/alpha36/ebd47d6e19e71c45701e/One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG_audio01.track1.jpn.mka",
+        "gofile": "https://gofile.io/d/XT3sdFn0"
+      },
+      "md5": "13ACCFFA91D017FCF5C3C4D7EA57D180",
+      "name": "One.Piece.S01E1180.1080p.NF.WEB-DL.AAC2.0.H.264-VARYG.mkv",
+      "processed": true,
+      "sha1": "DE5B37452CE583398AA3475C90AA73DA53273C65",
+      "sha256": "B430504A5F5A1D5EC98DDC52E913512EA08AAB017E130B3895AA648DF34CAB58",
+      "size": 901680249,
+      "torrent_id": 695664,
+      "vidframe_timestamps": null
+    }
+  ],
+  "id": 695664,
+  "imdbid": "tt3354352",
+  "info_hash": "ef41cfb9d103853c4c2c60de905051c06512b2d3",
+  "info_hash_v2": null,
+  "is_batch": false,
+  "is_dupe": false,
+  "leechers": 9,
+  "magnet_uri": "magnet:?xt=urn:btih:ef41cfb9d103853c4c2c60de905051c06512b2d3&dn=%5BVARYG%5D%20One%20Piece%20S01E1180%201080p%20NF%20WEB-DL%20AAC2.0%20H.264%20%28Multi-Subs%29%20%7BTags%3AL0%3BV9%3BC1%3BA%3Dja%3BS%3Den%2Car%2Cde%2Ces419%2Ceses%2Cfrfr%2Cid%2Cit%2Cms%2Cpl%2Cptbr%2Cptpt%2Cth%2Ctr%2Cvi%3B%7D&tr=https%3A%2F%2Ftracker.nekobt.to%2Fapi%2Ftracker%2Fpublic%2Fannounce&tr=udp%3A%2F%2Ftr.anitracker.org%3A7777%2Fannounce&tr=http%3A%2F%2Ftr.anitracker.org%3A1337%2Fannounce&tr=http%3A%2F%2Fnyaa.tracker.wf%3A7777%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce",
+  "nekobt_id": 14320334789386,
+  "num_files": 1,
+  "nyaa_id": null,
+  "nyaa_subdom": null,
+  "nzb_url": "https://feed.animetosho.net/nzb/695664",
+  "primary_file_id": 1417314,
+  "screenshots": [
+    {
+      "id": 228923,
+      "title": "Screenshot at 00:03:56",
+      "url": "https://storage.animetosho.net/sframes/0015a062_1.jpg?h=72"
+    },
+    {
+      "id": 228924,
+      "title": "Screenshot at 00:07:52",
+      "url": "https://storage.animetosho.net/sframes/0015a062_2.jpg?h=72"
+    },
+    {
+      "id": 228925,
+      "title": "Screenshot at 00:11:44",
+      "url": "https://storage.animetosho.net/sframes/0015a062_3.jpg?h=72"
+    },
+    {
+      "id": 228926,
+      "title": "Screenshot at 00:15:47",
+      "url": "https://storage.animetosho.net/sframes/0015a062_4.jpg?h=72"
+    },
+    {
+      "id": 228927,
+      "title": "Screenshot at 00:19:43",
+      "url": "https://storage.animetosho.net/sframes/0015a062_5.jpg?h=72"
+    }
+  ],
+  "seeders": 13,
+  "source": "nekobt",
+  "source_id": "14320334789386",
+  "status": "complete",
+  "timestamp": 1791628407,
+  "title": "[VARYG] One Piece S01E1180 1080p NF WEB-DL AAC2.0 H.264 (Multi-Subs)",
+  "tmdbid": "37854",
+  "torrent_downloaded_count": 1,
+  "torrent_name": "[VARYG] One Piece S01E1180 1080p NF WEB-DL AAC2.0 H.264 (Multi-Subs)",
+  "torrent_url": "https://storage.animetosho.net/legacy_tosho/storage/torrents/ef4/1cfb9d103853c4c2c60de905051c06512b2d3.torrent?filename=%5BVARYG%5D+One+Piece+S01E1180+1080p+NF+WEB-DL+AAC2.0+H.264+%28Multi-Subs%29.torrent",
+  "tosho_id": null,
+  "total_size": 901680249,
+  "tvdb_season": null,
+  "tvdbid": 81797,
+  "website_url": "https://myanimelist.net/anime/21/"
+}

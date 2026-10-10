@@ -20,6 +20,7 @@ except ImportError:
     except ImportError:
         import xml.etree.ElementTree as etree
 
+# animetosho_xyz prefers AniDB episode IDs, with native .net lookup as fallback.
 refined_providers = {'animetosho', 'animetosho_xyz', 'jimaku'}
 providers_requiring_anidb_api = {'animetosho', 'animetosho_xyz'}
 
@@ -210,7 +211,14 @@ def refine_from_anidb(path, video):
         return
 
     if refined_providers.intersection(settings.general.enabled_providers) and video.series_anidb_id is None:
-        refine_anidb_ids(video)
+        try:
+            refine_anidb_ids(video)
+        except requests.exceptions.RequestException as error:
+            if 'animetosho_xyz' not in settings.general.enabled_providers:
+                raise
+            # Do not log request URLs/params: AniDB requests contain client credentials.
+            logger.warning('AniDB metadata unavailable (%s); AnimeTosho can use native lookup.',
+                           type(error).__name__)
 
 
 def refine_anidb_ids(video):
